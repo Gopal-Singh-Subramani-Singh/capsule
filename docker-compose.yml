@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: capsule_minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  registry:
+    image: registry:2
+    container_name: capsule_docker_registry
+    ports:
+      - "5001:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: capsule_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: capsule_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: capsule
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  minio_data:
+  registry_data:
+  grafana_data:

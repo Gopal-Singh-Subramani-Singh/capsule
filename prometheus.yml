@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "capsule-fraud-v1"
+    static_configs:
+      - targets: ["172.17.0.2:8080"]
+    relabel_configs:
+      - target_label: model_name
+        replacement: fraud-detector
+      - target_label: model_version
+        replacement: "1.0"
+
+  - job_name: "capsule-fraud-v2"
+    static_configs:
+      - targets: ["172.17.0.3:8080"]
+    relabel_configs:
+      - target_label: model_name
+        replacement: fraud-detector
+      - target_label: model_version
+        replacement: "2.0"

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "capsule"
+version = "0.1.0"
+description = "Container-Native ML Model Deployment Platform"
+requires-python = ">=3.11"
+
+[project.scripts]
+capsule = "capsule.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["capsule*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+filterwarnings = ["ignore::DeprecationWarning"]

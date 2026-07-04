@@ -1,0 +1,28 @@
+name: fraud-detector
+version: "1.0"
+framework: pytorch
+model_path: fraud_model_module.pt
+python_version: "3.11"
+port: 8080
+
+resources:
+  cpu_request: "100m"
+  cpu_limit: "500m"
+  memory_request: "256Mi"
+  memory_limit: "1Gi"
+  replicas: 2
+
+health:
+  path: /health
+  port: 8080
+  initial_delay_seconds: 15
+
+canary:
+  enabled: true
+  initial_weight: 10
+  auto_promote: true
+  error_rate_threshold: 0.05
+
+labels:
+  team: "ml-platform"
+  domain: "fraud"

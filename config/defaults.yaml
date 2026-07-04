@@ -1,0 +1,44 @@
+registry:
+  endpoint: "http://localhost:9000"
+  access_key: "minioadmin"
+  secret_key: "minioadmin"
+  bucket: "capsule-models"
+  secure: false
+
+k8s:
+  namespace: "capsule"
+  context: "default"
+  kubeconfig: null  # uses ~/.kube/config
+
+docker:
+  registry: "localhost:5001"
+  platform: "linux/arm64"
+  build_timeout: 300
+
+helm:
+  chart_dir: "/tmp/capsule-charts"
+  release_prefix: "capsule"
+
+canary:
+  initial_weight: 10
+  monitor_interval_seconds: 30
+  error_rate_threshold: 0.05
+  consecutive_failures: 2
+  auto_promote_windows: 10
+
+onnx:
+  enabled: true
+  quantization: true
+  validation_tolerance: 0.01
+  max_model_size_mb: 2000
+
+server:
+  port: 8080
+  workers: 1
+  health_path: "/health"
+  predict_path: "/predict"
+  metrics_path: "/metrics"
+
+prometheus:
+  enabled: true
+  scrape_port: 8080

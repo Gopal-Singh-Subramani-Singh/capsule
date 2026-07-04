@@ -1,0 +1,144 @@
+{
+  "id": null,
+  "uid": "capsule-demo",
+  "title": "Capsule — ML Model Serving",
+  "tags": ["capsule", "ml"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Total Requests — v1.0",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color":"green","value":null}] }, "unit": "short" }
+      },
+      "targets": [{ "expr": "sum(model_requests_total{job=\"capsule-fraud-v1\"})", "legendFormat": "v1.0 total" }],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Total Requests — v2.0",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color":"blue","value":null}] }, "unit": "short" }
+      },
+      "targets": [{ "expr": "sum(model_requests_total{job=\"capsule-fraud-v2\"})", "legendFormat": "v2.0 total" }],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Request Rate (rps) — v1.0",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color":"green","value":null}] }, "unit": "reqps", "decimals": 2 }
+      },
+      "targets": [{ "expr": "sum(rate(model_requests_total{job=\"capsule-fraud-v1\"}[1m]))", "legendFormat": "v1 rps" }],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Request Rate (rps) — v2.0",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color":"blue","value":null}] }, "unit": "reqps", "decimals": 2 }
+      },
+      "targets": [{ "expr": "sum(rate(model_requests_total{job=\"capsule-fraud-v2\"}[1m]))", "legendFormat": "v2 rps" }],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Error Rate — v1.0",
+      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "unit": "percentunit", "decimals": 2,
+          "thresholds": { "steps": [{"color":"green","value":null},{"color":"yellow","value":0.01},{"color":"red","value":0.05}] }
+        }
+      },
+      "targets": [{ "expr": "sum(rate(model_requests_total{job=\"capsule-fraud-v1\",status=\"error\"}[5m])) / sum(rate(model_requests_total{job=\"capsule-fraud-v1\"}[5m]))", "legendFormat": "v1 err%" }],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Error Rate — v2.0",
+      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "unit": "percentunit", "decimals": 2,
+          "thresholds": { "steps": [{"color":"green","value":null},{"color":"yellow","value":0.01},{"color":"red","value":0.05}] }
+        }
+      },
+      "targets": [{ "expr": "sum(rate(model_requests_total{job=\"capsule-fraud-v2\",status=\"error\"}[5m])) / sum(rate(model_requests_total{job=\"capsule-fraud-v2\"}[5m]))", "legendFormat": "v2 err%" }],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Requests per Second — v1.0 vs v2.0",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "lineWidth": 2, "fillOpacity": 15 } },
+        "overrides": [
+          { "matcher": {"id":"byName","options":"v1.0"}, "properties": [{"id":"color","value":{"mode":"fixed","fixedColor":"green"}}] },
+          { "matcher": {"id":"byName","options":"v2.0"}, "properties": [{"id":"color","value":{"mode":"fixed","fixedColor":"blue"}}] }
+        ]
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        { "expr": "sum(rate(model_requests_total{job=\"capsule-fraud-v1\"}[30s]))", "legendFormat": "v1.0" },
+        { "expr": "sum(rate(model_requests_total{job=\"capsule-fraud-v2\"}[30s]))", "legendFormat": "v2.0" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Inference Latency p50 — v1.0 vs v2.0",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "custom": { "lineWidth": 2, "fillOpacity": 10 } }
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(model_request_duration_seconds_bucket{job=\"capsule-fraud-v1\"}[1m])) by (le))", "legendFormat": "v1.0 p50" },
+        { "expr": "histogram_quantile(0.50, sum(rate(model_request_duration_seconds_bucket{job=\"capsule-fraud-v2\"}[1m])) by (le))", "legendFormat": "v2.0 p50" },
+        { "expr": "histogram_quantile(0.99, sum(rate(model_request_duration_seconds_bucket{job=\"capsule-fraud-v1\"}[1m])) by (le))", "legendFormat": "v1.0 p99" },
+        { "expr": "histogram_quantile(0.99, sum(rate(model_request_duration_seconds_bucket{job=\"capsule-fraud-v2\"}[1m])) by (le))", "legendFormat": "v2.0 p99" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Cumulative Requests Over Time",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 7 },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "custom": { "lineWidth": 2, "fillOpacity": 20 } },
+        "overrides": [
+          { "matcher": {"id":"byName","options":"fraud-detector v1.0"}, "properties": [{"id":"color","value":{"mode":"fixed","fixedColor":"green"}}] },
+          { "matcher": {"id":"byName","options":"fraud-detector v2.0"}, "properties": [{"id":"color","value":{"mode":"fixed","fixedColor":"blue"}}] }
+        ]
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        { "expr": "sum(model_requests_total{job=\"capsule-fraud-v1\",status=\"ok\"})", "legendFormat": "fraud-detector v1.0" },
+        { "expr": "sum(model_requests_total{job=\"capsule-fraud-v2\",status=\"ok\"})", "legendFormat": "fraud-detector v2.0" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    }
+  ]
+}
