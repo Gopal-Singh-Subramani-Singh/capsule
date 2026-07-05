@@ -40,3 +40,7 @@ temp/
 # Database files
 *.db-shm
 *.db-wal
+*.db
+
+# Capsule generated output
+capsule_output/

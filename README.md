@@ -18,26 +18,39 @@ Deploying an ML model to production requires solving half a dozen infrastructure
 
 ## Architecture
 
-```
-CLI (Typer: package / deploy / status / rollback / list)
-  │
-  ├── Packager
-  │     ├── detector.py     → auto-detect framework (PyTorch / sklearn / ONNX)
-  │     ├── packager.py     → generate Dockerfile + FastAPI server code
-  │     ├── onnx_optimizer  → convert PyTorch → ONNX + INT8 quantisation
-  │     └── registry.py     → push image + model artifact to MinIO
-  │
-  ├── Deployer
-  │     ├── helm.py         → generate Helm chart (values.yaml + templates/)
-  │     ├── deployer.py     → apply chart to K3s via kubernetes Python client
-  │     └── k8s_client.py   → pod status, rollout wait, events
-  │
-  ├── CanaryController
-  │     ├── canary.py       → Traefik weighted traffic splitting
-  │     └──                  → Prometheus error rate query → auto-rollback trigger
-  │
-  └── ManifestStore
-        └── manifest.py     → SQLite package history + deployment log
+```mermaid
+flowchart TD
+    CLI([CLI\npackage · deploy · status\nrollback · list]) --> PKG
+
+    subgraph PKG [Packager]
+        DET[detector.py\nauto-detect framework\nPyTorch · sklearn · ONNX]
+        PACK[packager.py\nDockerfile + FastAPI\nserver generation]
+        ONNX[onnx_optimizer\nPyTorch → ONNX\nINT8 quantisation]
+        REG[registry.py\npush image + artifact\nto MinIO]
+        DET --> PACK --> ONNX --> REG
+    end
+
+    CLI --> DEP
+
+    subgraph DEP [Deployer]
+        HELM[helm.py\ngenerate Helm chart\nvalues.yaml + templates]
+        K8S[deployer.py\napply to K3s\nkubernetes Python client]
+        HELM --> K8S
+    end
+
+    CLI --> CC
+
+    subgraph CC [CanaryController]
+        TRF[canary.py\nTraefik weighted\ntraffic splitting]
+        PROM_Q[Prometheus query\nerror rate threshold]
+        ROLL[auto-rollback]
+        TRF --> PROM_Q --> ROLL
+    end
+
+    CLI --> MS[(ManifestStore\nSQLite\npackage history + deployment log)]
+
+    style CLI fill:#4A90D9,color:#fff
+    style ROLL fill:#C0392B,color:#fff
 ```
 
 ---
