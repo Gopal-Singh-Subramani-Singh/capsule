@@ -266,3 +266,7 @@ capsule rollback fraud-detector --yes   # rollback to v1
 ## Resume Bullet
 
 > Built a container-native model deployment platform with model manifests, Dockerfile generation, MinIO-backed versioning, Helm/K3s deployment workflows, and rollback support.
+## Screenshots
+![](docs/image47.png)
+![](docs/image48.png)
+![](docs/image49.png)
